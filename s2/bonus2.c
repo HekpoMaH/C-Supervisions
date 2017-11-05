@@ -97,15 +97,44 @@ int insert(Tree *node, int v){
     else
         return insert(&(*node)->left,v)+1;
 }
+void simul(Tree t,int M,double p,int K){
+    int visExtract=0;
+    int visInsert=0;
+    int opExtract=0,opInsert=0;
 
+    for(int i=0;i<M;i++){
+        double prob=(double)rand()/(double)RAND_MAX;
+        if(prob<p){
+            visExtract+=extractMin(&t);
+            opExtract++;
+        }
+        else{
+            visInsert+=insert(&t,rand()%K+1);
+            opInsert++;
+        }
+    }
+    //Printing interface credit to Tom Benn
+    printf("Extractions: %d   Insertions: %d\n", opExtract, opInsert);
+    printf("     Visits: %d       Visits: %d\n", visExtract, visInsert);
+    printf("Average visits per op: %f\n", ((double) (visExtract + visInsert)) / ((double) (opExtract + opInsert)));
+}
 int main(void){
-    int a[9]={22,48,13,97,35,3,17,5,53};
-    Tree t=createTournament(a,9);
-    parse(0,t);
-    printf("\n");
-    printf("%d\n",insert(&t,2));
-    printf("%d\n",insert(&t,26));
-    parse(0,t);
+    srand(47);//my lucky number
+    int n=100;
+    int K=10000;
+    int M=500;
+    double p=1.0/3.0;
+    int a[100];
+    for(int i=0;i<n;i++)a[i]=rand()%K+1;
+    Tree t=createTournament(a,n);
+    simul(t,M,p,K);
+    //int a[9]={22,48,13,97,35,3,17,5,53};
+    //Tree t=createTournament(a,9);
+    //parse(0,t);
+    //printf("\n");
+    //printf("%d\n",insert(&t,2));
+    //printf("%d\n",insert(&t,26));
+    //parse(0,t);
     //printPreorder(t);
     //for(int i=0;i<9;i++){
     //    printf("%d\n",extractMin(&t));
