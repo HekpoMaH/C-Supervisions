@@ -127,6 +127,51 @@ void addElement(double x){
     addPointer(&test,tmp);
     tmp=NULL;
 }
+
+int searchRow(double value, node *rw){
+    if(rw==NULL)
+        return 0;
+    if(rw->value==value)
+        return 1;
+    return searchRow(value, rw->rowPtr);
+}
+int searchCol(double value, node *col){
+    if(col==NULL)
+        return 0;
+    if(col->value==value)
+        return 1;
+    return searchCol(value, col->colPtr);
+}
+int duplicateValue(matrix *M, double value){
+    for(int i=0;i<(M->rows);i++){
+        if(searchRow(value,M->rowList[i]))
+            return 1;
+    }
+
+    //in case matrix was sparser than in our case
+    for(int i=0;i<(M->columns);i++){
+        if(searchCol(value,M->columnList[i]))
+            return 1;
+    }
+    return 0;
+}
+
+int resize(matrix **m){
+    (*m)->rows=(*m)->rows*2;
+    (*m)->columns=(*m)->columns*2;
+    node **tmp=NULL;
+    tmp=realloc((*m)->rowList,sizeof(node*)*(*m)->rows);
+    if(tmp==NULL)
+        return 0;
+    (*m)->rowList=tmp;
+
+    tmp=NULL;
+    tmp=realloc((*m)->columnList,sizeof(node*)*(*m)->columns);
+    if(tmp==NULL)
+        return 0;
+    (*m)->columnList=tmp;
+    return 1;
+}
 int main(void){
     test=allocate(3,4);
     assert(test!=NULL);
@@ -153,4 +198,16 @@ int main(void){
     puts("");
     printByCol(test);
     puts("-------");
+
+    printf("%d\n",duplicateValue(test,9.0f));
+    printf("%d\n",duplicateValue(test,19.0f));
+    puts("----------");
+
+    //test until it breaks
+    //(USE ulimit for safety)
+    for(int i=0;i<100;i++){
+        printf("%d %d\n",i,resize(&test));
+    }
+    //somewhere ~ i=31 gives segfault
+
 }
